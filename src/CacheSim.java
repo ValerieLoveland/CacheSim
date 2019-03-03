@@ -2,7 +2,7 @@ public class CacheSim {
     static int MM[] = new int[2048];
     static int cache[][] = new int[0x10][0x14];
     static String cacheHead[] = new String[]{"slot ", "dirty ", "valid ", "tag ", "data"};
-    static int[] addresses = new int[]{0x005, 0x006, 0x007, 0x14c, 0x14d, 0x14e, 0x14f, 0x150, 0x151, 0x3a6, 0x4c3, 0x582, 0x348, 0x14c, 0x63B, 0x3f, 0x14b, 0x14c, 0x63f, 0x83};
+    static int[] addresses = new int[]{0x005, 0x006, 0x007, 0x14c, 0x14d, 0x14e, 0x14f, 0x150, 0x151, 0x3a6, 0x4c3, 0x582, 0x348, 0x14c, 0x63B, 0x3f, 0x14b, 0x14c, 0x63f, 0x083};
     static int a = 0;
     static int[] writeArray = {0x99, 0x7};
     static int w = 0;
@@ -18,32 +18,20 @@ public class CacheSim {
     static String hitOrMiss = "miss";
     //static cache[slot][0]=slot;
 
-    public static void main(String[] args) {
+        public static void main (String[]args){
+            //for(a=0;a<0x13;a++)
+
+
         fillMainMemory();
-        for (int loopWholeProgram = 0; loopWholeProgram < 25; loopWholeProgram++) {
-            if (directionsArray[loopWholeProgram]== 'D'){
-                printHeader();
-                printCache();
-            }
-            else if((directionsArray[loopWholeProgram])== ('R')||(directionsArray[loopWholeProgram])== ('W')){
-                directionsReadOrWrite();
+        breakIntoTabSlotOffset();
+        copyMMBlockToCache();
+        printHeader();
+        printCache();
 
-            }
-
-            //breakIntoTabSlotOffset();
-            //copyMMBlockToCache();
-
-
-//        for (int m = 0; m < 0x7ff; m++) {
-//            System.out.printf("%2x", MM[m]);
-//            System.out.println();
-//        }
-
-        }
     }
 
 
-    public static void fillMainMemory() {
+        public static void fillMainMemory () {
 
         int mmFillWholeList = 0x00;
         //This part fills in 0-ff 7 times in MM*************************************
@@ -57,7 +45,7 @@ public class CacheSim {
 
     }
 
-    public static void printHeader() {
+        public static void printHeader () {
         for (int h = 0; h <= 4; h++) {
             System.out.print(cacheHead[h]);
             System.out.print("\t");
@@ -66,7 +54,7 @@ public class CacheSim {
 
     }
 
-    public static void printCache() {
+        public static void printCache () {
         cache[slot][0] = slot;
         cache[slot][1] = dirty;
         cache[slot][2] = valid;
@@ -86,29 +74,17 @@ public class CacheSim {
         }
     }
 
-    public static void breakIntoTabSlotOffset() {
+        public static void breakIntoTabSlotOffset () {
 
         int slot = (addresses[a] & 0x0f0) >>> 4;
         int tag = (addresses[a] & 0xf00) >>> 8;
         int offset = (addresses[a] & 0x00f);
         int blockStart = (addresses[a] & 0xff0);
-//        System.out.print("tag is ");
-//        System.out.printf("0x%02X", tag);
-//        System.out.println();
-//        System.out.print("slot is ");
-//        System.out.printf("0x%02X", slot);
-//        System.out.println();
-//        System.out.print("offset is ");
-//        System.out.printf("0x%02X", offset);
-//        System.out.println();
-//        System.out.print("blockStart is ");
-//        System.out.printf("0x%02X", blockStart);
-//        System.out.println();
-//        System.out.printf("0x%02X", MM[blockStart]);
+
 
     }
 
-    public static void copyMMBlockToCache() {
+        public static void copyMMBlockToCache () {
         int slot = (addresses[a] & 0x0f0) >>> 4;
         int tag = (addresses[a] & 0xf00) >>> 8;
         int offset = (addresses[a] & 0x00f);
@@ -124,7 +100,7 @@ public class CacheSim {
         }
     }
 
-    public static void copyDirtyCacheToMMBlock() {
+        public static void copyDirtyCacheToMMBlock () {
         int slot = (addresses[a] & 0x0f0) >>> 4;
         int tag = (addresses[a] & 0xf00) >>> 8;
         int offset = (addresses[a] & 0x00f);
@@ -139,8 +115,7 @@ public class CacheSim {
             System.out.println(MM[blockStart]);
         }
     }
-
-    public static void readOrWrite() {
+        public static void readOrWrite () {
         if (cache[slot][2] == 1) {//if valid bit is one
             if ((cache[slot][0] == slot) && (cache[slot][3] == tag) && (cache[slot][1] == 0)) {//and if tag and slot match and dirty=0
                 hitOrMiss = "hit";
@@ -192,27 +167,25 @@ public class CacheSim {
 
 
     }
-
-    public static void hitOrMissPrint() {//pulls the value of if it is a hit or miss and prints
+        public static void hitOrMissPrint () {//pulls the value of if it is a hit or miss and prints
         System.out.println("Cache " + hitOrMiss);
     }
 
 
-    public static void directionsRead() {//prints what is in the index of the cache
+        public static void directionsRead () {//prints what is in the index of the cache
         System.out.println(cache[slot][offset]);
         a++;
         d++;
 
     }
 
-    public static void directionsWrite() {//writes the value in the writeArray index into the offset in the cache
+        public static void directionsWrite () {//writes the value in the writeArray index into the offset in the cache
         cache[slot][offset] = writeArray[w];
         cache[slot][1] = 1;
         w++;
         a++;
     }
-
-    public static void directionsReadOrWrite() {
+        public static void directionsReadOrWrite () {
         if (directionsArray[d] == 'R') {
             directionsRead();
 
@@ -220,6 +193,6 @@ public class CacheSim {
             directionsWrite();
 
     }
-}
+    }
 
 
